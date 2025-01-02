@@ -1,0 +1,151 @@
+Step 1: Simple HTML for Our Camera app
+<video> section
+Snapshot <button> section
+<canvas> section
+Snapshot <img> section
+1. <video> section
+<video id="camera-stream" autoplay loop muted>
+  <source src="" >
+</video>
+2. Snapshot <button> section
+<div class="shutter-ctn">
+  ...
+  <button id="shutter" class="shutter">
+  </button>
+  ...
+</div>
+3. <canvas> section
+<canvas id="canvas"> </canvas>
+4. Snapshot <img> section
+<div id="gallery-view">
+  <button id="prev">
+    PREV
+  </button>
+  <img data-index="0" src="" alt="current viewed image">
+  <button id="next">
+    NEXT
+  </button>
+  ...
+</div>
+Step 2: Beautiful CSS Styles to Make Our App Pop
+body {
+  margin: 0;
+  max-height: 100vh;
+  overflow: hidden;
+}
+canvas {
+  display: none;
+}
+button {
+  border: 0;
+  outline: none;
+  background: #00000070;
+  color: #FFFFFF;
+  padding: 4px 8px;
+  height: 30px;
+  min-width: 30px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.camera-ctn {
+  position: relative;
+  background: #000000;
+}
+.camera-view video {
+  height: 100vh;
+  width: 100vw;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+/* CAMERA BOTTOM */
+.camera-bottom {
+  height: 250px;
+  background: #00000050;
+  position: absolute;
+  inset: 0;
+  top: auto;
+  padding: 0 5%;
+  display: grid;
+  place-items: center;
+}
+.camera-bottom > .inner {
+  display: grid;
+  place-items: center;
+  max-width: 500px;
+}
+
+/* SHUTTER CONTAINER */
+.shutter-ctn {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+}
+.shutter {
+  height: 80px;
+  width: 80px;
+  background: #FFFFFF;
+  border-radius: 50%;
+}
+.shutter:active {
+  transform: scale(0.8);
+}
+.switch-device {
+  height: 55px;
+  width: 55px;
+  border-radius: 50%;
+}
+Step 3: JavaScript Code to Make Our App Fully Functional
+1. Linking HTML elements to JS
+const cameraVideoStream = document.getElementById('camera-stream')
+const shutterButton = document.getElementById('shutter')
+const canvas = document.getElementById('canvas')
+...
+2. Connecting the webcam to JavaScript code
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia({ video: true })) {
+  navigator.mediaDevices
+    .getUserMedia({ video: true })
+    .then ((stream) => {
+            cameraVideoStream.srcObject = stream
+            cameraVideoStream.play()
+    })
+}
+let width = window.innerWidth
+let height = 0
+let streaming = false
+
+cameraVideoStream.addEventListener(
+  "canplay",
+  (ev) => {
+    if (!streaming) {
+      height = cameraVideoStream.videoHeight / (cameraVideoStream.videoWidth / width);
+
+      canvas.setAttribute("width", width);
+      canvas.setAttribute("height", height);
+      cameraVideoStream.setAttribute("width", width);
+      cameraVideoStream.setAttribute("height", height);
+      streaming = true;
+    }
+  },
+  false
+);
+3. Capture and save media from the webcam
+// Capture snapshots using HTML Canvas
+function captureImage () {
+  const canvasContext = canvas.getContext('2d')
+  canvas.width = width
+  canvas.height = height
+  canvasContext.drawImage(cameraVideoStream, 0, 0, width, height)
+
+  // Convert captured data to image (base64)
+  const data = canvas.toDataURL('image/png')
+  currentImageElement.src = data
+}
+
+// Add click listener to shutter button to capture image
+shutterButton.addEventListener('click', () =>
+
+
+
